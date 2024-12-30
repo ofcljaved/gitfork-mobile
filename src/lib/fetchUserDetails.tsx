@@ -6,6 +6,7 @@ export interface Repo {
     stargazers_count: number;
     updated_at: string;
     language: string;
+    html_url: string;
 }
 
 export interface UserDetails {
@@ -41,8 +42,8 @@ export const fetchUserDetails = async (username: string) => {
             hasMoreRepos = reposData.length === perPage;
             page++;
         }
-        const forkedRepos = allRepos.filter((repo) => repo.fork);
-        const notForkedRepos = allRepos.filter((repo) => !repo.fork);
+        const forkedRepos = allRepos.filter((repo) => repo.fork).sort((a, b) => (new Date(b.updated_at)).getTime() - (new Date(a.updated_at)).getTime());
+        const notForkedRepos = allRepos.filter((repo) => !repo.fork).sort((a, b) => (new Date(b.updated_at)).getTime() - (new Date(a.updated_at)).getTime());
 
         page = 1;
         let totalStars = 0;

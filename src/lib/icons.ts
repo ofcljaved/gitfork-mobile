@@ -1,5 +1,6 @@
 import { CiSearch } from "react-icons/ci";
-import { LuBook, LuGitFork, LuStar, LuUsers } from "react-icons/lu";
+import { GoClock } from "react-icons/go";
+import { LuBook, LuGitFork, LuGlobe, LuStar, LuUsers } from "react-icons/lu";
 
 const icons = {
     book:LuBook,
@@ -7,6 +8,8 @@ const icons = {
     gitFork:LuGitFork,
     star:LuStar,
     search: CiSearch,
+    globe:LuGlobe,
+    clock: GoClock,
 };
 
 export type IconKey = keyof typeof icons;
