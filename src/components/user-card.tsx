@@ -7,7 +7,7 @@ import Image from "next/image";
 export const UserCard = ({ user }: { user: UserDetails }) => {
     return (
         <Card className="border-none my-6">
-            <CardContent className="grid grid-rows-[20px_8rem_1fr]">
+            <CardContent className="p-0 grid grid-rows-[20px_8rem_1fr]">
                 <Image
                     width={564}
                     height={564}
@@ -15,19 +15,18 @@ export const UserCard = ({ user }: { user: UserDetails }) => {
                     alt="Profile"
                     className="w-32 h-32 mx-6 rounded-lg z-10 shadow-sm border border-primary row-start-1 row-end-3 col-start-1"
                 />
-                <div className="border border-muted-foreground rounded-xl grid gap-6 items-start row-start-2 row-end-4 col-start-1 grid-rows-subgrid">
-                    <div/>
-                    <div className="space-y-4 flex-1">
-                        <div>
-                            <h2 className="text-2xl font-bold text-gray-900">{user.name}</h2>
-                            <p className="text-gray-600">{user.bio}</p>
-                        </div>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <StatsCard icon={"book"} label="Repositories" value={user.publicRepos} />
-                            <StatsCard icon={"users"} label="Followers" value={user.followers} />
-                            <StatsCard icon={"gitFork"} label="Forks" value={user.forkedRepos.length} />
-                            <StatsCard icon={"star"} label="Stars" value={user.totalStars} />
-                        </div>
+                <div className="p-6 border border-muted-foreground/30 rounded-xl grid gap-6 items-start row-start-2 row-end-4 col-start-1 grid-rows-subgrid">
+                    <div />
+                    <div className="grid grid-cols-2 sm:grid-cols-[1fr_2fr] gap-4">
+                        <h2 className="text-2xl font-bold col-span-full">{user.name}</h2>
+                        <p className="text-gray-600 col-span-full text-balance">{
+                            user.bio ??
+                            <span className="italic text-gray-400">~No bio... YOU must think very highly of yourself~</span>
+                        }</p>
+                        <StatsCard icon={"book"} label="Repositories" value={user.publicRepos} />
+                        <StatsCard icon={"users"} label="Followers" value={user.followers} />
+                        <StatsCard icon={"gitFork"} label="Forks" value={user.forkedRepos.length} />
+                        <StatsCard icon={"star"} label="Stars" value={user.totalStars} />
                     </div>
                 </div>
             </CardContent>
@@ -36,13 +35,11 @@ export const UserCard = ({ user }: { user: UserDetails }) => {
 }
 
 const StatsCard = ({ icon, label, value }: { icon: IconKey, label: string, value: number }) => (
-    <div className="flex items-center gap-3 bg-gray-50 p-4 rounded-lg border border-gray-200">
-        <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
-            <Icon icon={icon} />
+    <div className="grid gap-x-3 rounded-lg grid-cols-[auto_1fr] items-center">
+        <div className="p-2 bg-blue-50 dark:bg-blue-700/20 text-blue-600 rounded-lg row-start-1 row-end-3">
+            <Icon icon={icon} size={30} />
         </div>
-        <div>
-            <div className="text-sm text-gray-600">{label}</div>
-            <div className="font-bold text-gray-900">{value}</div>
-        </div>
+        <div className="text-sm text-secondary-foreground">{label}</div>
+        <div className="font-bold col-start-2">{value}</div>
     </div>
 );
