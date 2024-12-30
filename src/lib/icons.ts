@@ -1,3 +1,4 @@
+import { CiSearch } from "react-icons/ci";
 import { LuBook, LuGitFork, LuStar, LuUsers } from "react-icons/lu";
 
 const icons = {
@@ -5,6 +6,7 @@ const icons = {
     users:LuUsers,
     gitFork:LuGitFork,
     star:LuStar,
+    search: CiSearch,
 };
 
 export type IconKey = keyof typeof icons;

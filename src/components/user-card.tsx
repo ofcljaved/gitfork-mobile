@@ -10,8 +10,8 @@ export const UserCard = ({ user }: { user: UserDetails }) => {
             <CardContent className="p-6">
                 <div className="flex flex-col md:flex-row gap-6 items-start">
                     <Image
-                        width={64}
-                        height={64}
+                        width={564}
+                        height={564}
                         src={user.avatarUrl}
                         alt="Profile"
                         className="w-32 h-32 rounded-lg shadow-sm border border-gray-200"

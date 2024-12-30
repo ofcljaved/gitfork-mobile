@@ -1,3 +1,13 @@
+export interface Repo {
+    name: string;
+    description: string;
+    fork: boolean;
+    forks_count: number;
+    stargazers_count: number;
+    updated_at: string;
+    language: string;
+}
+
 export interface UserDetails {
     username: string;
     avatarUrl: string;
@@ -6,8 +16,8 @@ export interface UserDetails {
     followers: number;
     publicRepos: number;
     totalStars: number;
-    forkedRepos: Record<string, any>[];
-    notForkedRepos: Record<string, any>[];
+    forkedRepos: Repo[];
+    notForkedRepos: Repo[];
 }
 
 export const fetchUserDetails = async (username: string) => {
@@ -23,7 +33,7 @@ export const fetchUserDetails = async (username: string) => {
 
         let hasMoreRepos = true;
         let page = 1;
-        let allRepos: Record<string, any>[] = [];
+        let allRepos: Repo[] = [];
         while (hasMoreRepos) {
             const reposResponse = await fetch(`${reposUrl}?page=${page}&per_page=${perPage}`);
             const reposData = await reposResponse.json();
