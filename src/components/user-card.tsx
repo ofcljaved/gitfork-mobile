@@ -6,16 +6,17 @@ import Image from "next/image";
 
 export const UserCard = ({ user }: { user: UserDetails }) => {
     return (
-        <Card className="border-gray-200 shadow-sm">
-            <CardContent className="p-6">
-                <div className="flex flex-col md:flex-row gap-6 items-start">
-                    <Image
-                        width={564}
-                        height={564}
-                        src={user.avatarUrl}
-                        alt="Profile"
-                        className="w-32 h-32 rounded-lg shadow-sm border border-gray-200"
-                    />
+        <Card className="border-none my-6">
+            <CardContent className="grid grid-rows-[20px_8rem_1fr]">
+                <Image
+                    width={564}
+                    height={564}
+                    src={user.avatarUrl}
+                    alt="Profile"
+                    className="w-32 h-32 mx-6 rounded-lg z-10 shadow-sm border border-primary row-start-1 row-end-3 col-start-1"
+                />
+                <div className="border border-muted-foreground rounded-xl grid gap-6 items-start row-start-2 row-end-4 col-start-1 grid-rows-subgrid">
+                    <div/>
                     <div className="space-y-4 flex-1">
                         <div>
                             <h2 className="text-2xl font-bold text-gray-900">{user.name}</h2>
@@ -23,9 +24,9 @@ export const UserCard = ({ user }: { user: UserDetails }) => {
                         </div>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                             <StatsCard icon={"book"} label="Repositories" value={user.publicRepos} />
-                            <StatsCard icon={"users"} label="Followers" value={user.followers}/>
-                            <StatsCard icon={"gitFork"} label="Forks" value={user.forkedRepos.length}/>
-                            <StatsCard icon={"star"} label="Stars" value={user.totalStars}/>
+                            <StatsCard icon={"users"} label="Followers" value={user.followers} />
+                            <StatsCard icon={"gitFork"} label="Forks" value={user.forkedRepos.length} />
+                            <StatsCard icon={"star"} label="Stars" value={user.totalStars} />
                         </div>
                     </div>
                 </div>
