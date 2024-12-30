@@ -27,7 +27,7 @@ const RepoCard = ({ repo }: { repo: Repo }) => {
                         <h4 className="font-semibold text-lg text-foreground group-hover:text-blue-400">
                             {repo.name}
                         </h4>
-                        <p className="truncate">{
+                        <p className="w-[35ch] md:w-full truncate">{
                             repo.description ?? <span className="italic text-sm">~Description? Nah, who needs context anyway~</span>
                         }</p>
                     </div>
