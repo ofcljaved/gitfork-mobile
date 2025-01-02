@@ -1,4 +1,6 @@
 import type { Config } from "tailwindcss";
+import type { PluginAPI } from "tailwindcss/types/config";
+import tailwindcssAnimate from "tailwindcss-animate";
 
 export default {
   darkMode: ["class"],
@@ -68,8 +70,8 @@ export default {
     },
   },
   plugins: [
-    require("tailwindcss-animate"),
-    function ({ addUtilities }) {
+    tailwindcssAnimate,
+    function ({ addUtilities }: { addUtilities: PluginAPI["addUtilities"] }) {
       addUtilities({
         ".bg-shiny-border": {
           background: `linear-gradient(hsl(var(--background)), hsl(var(--background))) padding-box, 
