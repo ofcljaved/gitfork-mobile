@@ -6,6 +6,7 @@ export function ThemeChange() {
     const { theme, setTheme } = useTheme();
     return (
         <button
+            type="button"
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             className="inline-flex items-center justify-center border p-2 hover:bg-muted rounded-md border-muted/70 cursor-pointer"
         >
