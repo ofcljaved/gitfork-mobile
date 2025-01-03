@@ -6,7 +6,7 @@ import Image from "next/image";
 
 export const UserCard = ({ user }: { user: UserDetails }) => {
     return (
-        <Card className="border-none my-6">
+        <Card className="bg-transparent border-none my-6">
             <CardContent className="p-0 grid grid-rows-[20px_8rem_1fr]">
                 <Image
                     width={564}
