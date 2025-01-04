@@ -3,6 +3,10 @@ import Icon from "./icon";
 import { Card, CardContent } from "./ui/card";
 import Link from "next/link";
 import { timesAgo } from "@/lib/timesAgo";
+import { LINES } from "@/constant/stalker-humor";
+
+const NO_OF_REPOS = 4;
+const randomOneLiner = () => LINES[Math.floor(Math.random() * LINES.length)];
 
 export const RepoList = ({ title, repos, forked }: { title: string, forked?: boolean, repos: Repo[] }) => {
     return (
@@ -11,9 +15,20 @@ export const RepoList = ({ title, repos, forked }: { title: string, forked?: boo
                 <Icon icon={forked ? "gitFork" : "book"} size={30} />
                 {title}
             </h3>
-            {repos.map((repo, i) => (
+            {repos.slice(0, NO_OF_REPOS).map((repo, i) => (
                 <RepoCard key={i} repo={repo} />
             ))}
+            {repos.length > NO_OF_REPOS && (
+                <div className="grid justify-items-center gap-2 px-2 text-sm text-muted-foreground shadow-[0_-2rem_10rem_2rem] shadow-background">
+                    <p><i>~{randomOneLiner()}~</i></p>
+                    <Link href={`/${forked ? 'forked' : 'original'}`} className=" text-blue-400">
+                        <span className="mx-2 text-muted-foreground">
+                            {repos.length - NO_OF_REPOS} more
+                        </span>
+                        View all
+                    </Link>
+                </div>
+            )}
         </div>
     );
 };
