@@ -11,60 +11,6 @@ export default function Loader(props: SVGProps<SVGSVGElement>) {
             textRendering="geometricPrecision"
             {...props}
         >
-            <style>
-                {`
-          #gitfork-u-wave2_to {
-            animation: gitfork-u-wave2_to__to 1739.1304347826087ms linear infinite normal forwards
-          }
-
-          @keyframes gitfork-u-wave2_to__to {
-            0% { transform: translate(234.384818px, 302.493424px) }
-            100% { transform: translate(0.415722px, 175.039452px) }
-          }
-
-          #gitfork-u-wave_to {
-            animation: gitfork-u-wave_to__to 1739.1304347826087ms linear infinite normal forwards
-          }
-
-          @keyframes gitfork-u-wave_to__to {
-            0% { transform: translate(272.678816px, 305.341051px) }
-            100% { transform: translate(35.068184px, 184.25981px) }
-          }
-
-          #gitfork-s-path3_tr {
-            animation: gitfork-s-path3_tr__tr 1739.1304347826087ms linear infinite normal forwards
-          }
-
-          @keyframes gitfork-s-path3_tr__tr {
-            0% {
-              transform: translate(135.33781px, 207.03926px) rotate(720deg);
-              animation-timing-function: cubic-bezier(0.415, 0.08, 0.115, 0.955)
-            }
-            100% { transform: translate(135.33781px, 207.03926px) rotate(557.380011deg) }
-          }
-
-          #gitfork-s-path3 {
-            animation: gitfork-s-path3_f_p 1739.1304347826087ms linear infinite normal forwards
-          }
-
-          @keyframes gitfork-s-path3_f_p {
-            0% { fill: #d2dbed }
-            100% { fill: #d2dbed }
-          }
-
-          #gitfork-s-path4_tr {
-            animation: gitfork-s-path4_tr__tr 1739.1304347826087ms linear infinite normal forwards
-          }
-
-          @keyframes gitfork-s-path4_tr__tr {
-            0% {
-              transform: translate(11.12px, 29.9px) rotate(-720deg);
-              animation-timing-function: cubic-bezier(0.415, 0.08, 0.115, 0.955)
-            }
-            100% { transform: translate(11.12px, 29.9px) rotate(-557.380011deg) }
-          }
-        `}
-            </style>
             <defs>
                 <linearGradient
                     id="gitfork-s-rect1-fill"

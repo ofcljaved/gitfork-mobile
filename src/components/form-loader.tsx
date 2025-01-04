@@ -2,16 +2,13 @@
 
 import { useFormStatus } from "react-dom";
 import Loader from "./ui/loader";
+import { useEffect } from "react";
 
 const FormLoader = () => {
     const { pending } = useFormStatus()
 
-    if (!pending) {
-        document.body.classList.remove('overflow-hidden');
-        return null;
-    }
+    if (!pending) return null;
 
-    document.body.classList.add('overflow-hidden');
     return (
         <div className="fixed z-50 inset-x-0 h-svh top-0 flex items-center justify-center bg-background/50 backdrop-blur-[1px] animate-in animate-out">
             <Loader className="h-80 w-80" />
