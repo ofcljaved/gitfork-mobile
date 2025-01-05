@@ -2,7 +2,6 @@
 
 import { useFormStatus } from "react-dom";
 import Loader from "./ui/loader";
-import { useEffect } from "react";
 
 const FormLoader = () => {
     const { pending } = useFormStatus()

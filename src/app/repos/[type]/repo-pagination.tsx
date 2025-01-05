@@ -1,8 +1,7 @@
 
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
-import { ParamsValid } from "@/lib/url-state";
+import { ParamsValid, SearchParams } from "@/lib/url-state";
 import { cn } from "@/lib/utils";
-import { SearchParams } from "next/dist/server/request/search-params";
 
 const createPathname = (params: ParamsValid) => {
     const { type } = params;
@@ -24,9 +23,9 @@ const generatePageNumber = (currentPage: number, totalPages: number): {
     afterEllipsis: boolean;
     pageNumbers: number[];
 } => {
-    if (totalPages < 1 ) return { beforeEllipsis: false, afterEllipsis: false, pageNumbers: [] };
+    if (totalPages < 1) return { beforeEllipsis: false, afterEllipsis: false, pageNumbers: [] };
 
-    const parsedCurrentPage = Math.max(1, isNaN(Number(currentPage))? 1 : Number(currentPage));
+    const parsedCurrentPage = Math.max(1, isNaN(Number(currentPage)) ? 1 : Number(currentPage));
     const adjustedCurrentPage = parsedCurrentPage >= totalPages ? totalPages - 1 : parsedCurrentPage;
     const startPage = Math.max(1, adjustedCurrentPage - 1);
     const endPage = Math.min(totalPages, startPage + 2);
@@ -63,7 +62,7 @@ export const RepoPagination = ({
                     <PaginationPrevious
                         href={{
                             pathname: createPathname(params),
-                            query: createSearchParams(searchParams, Math.max(1, currentPage - 1)),
+                            query: { ...createSearchParams(searchParams, Math.max(1, currentPage - 1)) },
                         }}
                         className={cn(currentPage <= 1 && "cursor-not-allowed pointer-events-none opacity-50")}
                     />
@@ -78,7 +77,7 @@ export const RepoPagination = ({
                         <PaginationLink
                             href={{
                                 pathname: createPathname(params),
-                                query: createSearchParams(searchParams, pageNumber),
+                                query: { ...createSearchParams(searchParams, pageNumber) },
                             }}
                             isActive={pageNumber === currentPage}
                         >
@@ -95,7 +94,7 @@ export const RepoPagination = ({
                     <PaginationNext
                         href={{
                             pathname: createPathname(params),
-                            query: createSearchParams(searchParams, Math.min(totalPages, currentPage + 1)),
+                            query: { ...createSearchParams(searchParams, Math.min(totalPages, currentPage + 1)) },
                         }}
                         className={cn(currentPage >= totalPages && "cursor-not-allowed pointer-events-none opacity-50")}
                     />
