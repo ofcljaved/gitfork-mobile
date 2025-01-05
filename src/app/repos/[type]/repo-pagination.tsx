@@ -24,18 +24,21 @@ const generatePageNumber = (currentPage: number, totalPages: number): {
     afterEllipsis: boolean;
     pageNumbers: number[];
 } => {
+    if (totalPages < 1 ) return { beforeEllipsis: false, afterEllipsis: false, pageNumbers: [] };
+
+    const parsedCurrentPage = Math.max(1, isNaN(Number(currentPage))? 1 : Number(currentPage));
+    const adjustedCurrentPage = parsedCurrentPage >= totalPages ? totalPages - 1 : parsedCurrentPage;
+    const startPage = Math.max(1, adjustedCurrentPage - 1);
+    const endPage = Math.min(totalPages, startPage + 2);
+
     const pageNumbers: number[] = [];
-    const start = currentPage >= totalPages ? --totalPages : currentPage;
-    const initializer = Math.max(1, start - 1);
-    const conditionalRange = initializer + 2;
-    for (let i = initializer; i <= conditionalRange; i++) {
+    for (let i = startPage; i <= endPage; i++) {
         pageNumbers.push(i);
     }
-    let beforeEllipsis = false;
-    let afterEllipsis = false;
 
-    if (currentPage > 2) beforeEllipsis = true;
-    if (currentPage < totalPages - 1) afterEllipsis = true;
+    const beforeEllipsis = startPage > 1;
+    const afterEllipsis = endPage < totalPages;
+
     return { beforeEllipsis, afterEllipsis, pageNumbers };
 };
 
