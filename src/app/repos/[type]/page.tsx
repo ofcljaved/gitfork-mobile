@@ -1,37 +1,76 @@
 import { RepoList } from "@/components/repo-list";
-import { fetchUserDetails, UserDetails } from "@/lib/fetchUserDetails";
-import { REPO_TYPES } from "@/constant";
+import { fetchUserDetails, Repo } from "@/lib/fetchUserDetails";
 import { UserCard } from "@/components/user-card";
+import { ITEMS_PER_PAGE, REPO_TYPE } from "@/constant";
+import { RepoPagination } from "./repo-pagination";
+import { parseParams, parseSearchParams } from "@/lib/url-state";
 
-type RepoType = typeof REPO_TYPES[number];
-export default async function Page({
-    params,
-    searchParams,
-}: {
-    params: Promise<{ type: RepoType }>
-    searchParams: Promise<{ name: string }>
+export default async function Page(
+    props: {
+    params: Promise<Record<string, string | undefined>>
+    searchParams: Promise<Record<string, string | undefined>>
 }) {
-    const type = (await params).type;
-    const q = (await searchParams).name;
+    const params = await props.params;
+    const parsedParams = parseParams(params);
+    const searchParams = await props.searchParams;
+    const parsedSearchParams = parseSearchParams(searchParams);
 
-    const user = q ? await fetchUserDetails(q) : null;
-
-    if (!user) return <h1>User not found</h1>;
-
-    if (!REPO_TYPES.includes(type)) {
+    if (!parsedParams.isValid) {
         return (
-            <h1>Something went wrong</h1>
+            <h1>Something went wrong, path: {parsedParams.type}</h1>
         );
     }
 
+    const { name: q, page } = parsedSearchParams;
 
+    const user = q ? await fetchUserDetails(q) : null;
+    if (!user) return <h1>User not found</h1>;
+
+    type RepoListType = {
+        repos: Repo[];
+        title: string;
+        forked: boolean;
+    }
+
+    let repoList: RepoListType = {
+        repos: [],
+        title: '',
+        forked: false,
+    };
+
+    if (params.type === REPO_TYPE.original) {
+        repoList = {
+            repos: user.notForkedRepos,
+            title: 'Original Repositories',
+            forked: false,
+        }
+    } else if (params.type === REPO_TYPE.forked) {
+        repoList = {
+            repos: user.forkedRepos,
+            title: 'Forked Repositories',
+            forked: true,
+        }
+    }
+
+    const currentPage = Math.max(1, Number(page) || 1);
+    const totalPages = Math.ceil(repoList.repos.length / ITEMS_PER_PAGE);
+    const pageStart = (currentPage - 1) * ITEMS_PER_PAGE;
+    const pageEnd = pageStart + ITEMS_PER_PAGE;
+
+    repoList.repos = repoList.repos.slice(pageStart, pageEnd);
     return (
         <>
             <UserCard user={user} small />
             <RepoList
-                title={type === 'original' ? 'Original Repositories' : 'Forked Repositories'}
-                repos={type === 'original' ? user.notForkedRepos : user.forkedRepos}
-                forked={type === 'forked'}
+                title={repoList.title}
+                repos={repoList.repos}
+                forked={repoList.forked}
+            />
+            <RepoPagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                params={parsedParams}
+                searchParams={parsedSearchParams}
             />
         </>
     );

@@ -28,7 +28,9 @@ export const fetchUserDetails = async (username: string) => {
     const perPage = 100;
 
     try {
-        const userResponse = await fetch(userUrl);
+        const userResponse = await fetch(userUrl, {
+            cache: 'force-cache',
+        });
         if (!userResponse.ok) throw new Error('Failed to fetch user data');
         const userData = await userResponse.json();
 
