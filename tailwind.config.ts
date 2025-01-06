@@ -1,4 +1,6 @@
 import type { Config } from "tailwindcss";
+import type { PluginAPI } from "tailwindcss/types/config";
+import tailwindcssAnimate from "tailwindcss-animate";
 
 export default {
   darkMode: ["class"],
@@ -9,13 +11,24 @@ export default {
   ],
   theme: {
     extend: {
+      willChange: {
+        blob: "transform, border-radius",
+      },
       animation: {
         rotate: "rotate 8s linear infinite alternate",
+        blob: "morph 10s linear infinite alternate, spin-blob 26s linear infinite reverse",
       },
       keyframes: {
         rotate: {
           "0%, 100%": { "--angle": "120deg" },
           "50%": { "--angle": "170deg" },
+        },
+        morph: {
+          "0%": { "border-radius": "27% 73% 71% 29% / 52% 38% 62% 48%" },
+          "100%": { "border-radius": "45% 55% 29% 71% / 64% 31% 69% 36%" },
+        },
+        "spin-blob": {
+          "100%": { "transform": "rotate(1turn)" },
         },
       },
       colors: {
@@ -68,8 +81,8 @@ export default {
     },
   },
   plugins: [
-    require("tailwindcss-animate"),
-    function ({ addUtilities }) {
+    tailwindcssAnimate,
+    function ({ addUtilities }: { addUtilities: PluginAPI["addUtilities"] }) {
       addUtilities({
         ".bg-shiny-border": {
           background: `linear-gradient(hsl(var(--background)), hsl(var(--background))) padding-box, 

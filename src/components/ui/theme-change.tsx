@@ -5,15 +5,21 @@ import Icon from "../icon";
 export function ThemeChange() {
     const { theme, setTheme } = useTheme();
     return (
-        <div
+        <button
+            type="button"
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="border p-2 hover:bg-muted rounded-md border-muted/70 cursor-pointer"
+            className="inline-flex items-center justify-center border p-2 hover:bg-muted rounded-md border-muted/70 cursor-pointer"
         >
             <Icon
-                icon={theme === "dark" ? "sun" : "moon"}
+                icon={"sun"}
                 size={20}
-                className="text-secondary-foreground"
+                className="text-secondary-foreground rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
             />
-        </div>
+            <Icon
+                icon={"moon"}
+                size={20}
+                className="text-secondary-foreground absolute rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
+            />
+        </button>
     );
 }
