@@ -27,6 +27,8 @@ export const fetchUserDetails = async (username: string) => {
     const starsUrl = `https://api.github.com/users/${username}/starred`;
     const perPage = 100;
 
+    console.time('fetchUserDetails');
+
     try {
         const userResponse = await fetch(userUrl, {
             cache: 'force-cache',
@@ -38,7 +40,9 @@ export const fetchUserDetails = async (username: string) => {
         let page = 1;
         let allRepos: Repo[] = [];
         while (hasMoreRepos) {
-            const reposResponse = await fetch(`${reposUrl}?page=${page}&per_page=${perPage}`);
+            const reposResponse = await fetch(`${reposUrl}?page=${page}&per_page=${perPage}`, {
+                cache: 'force-cache',
+            });
             const reposData = await reposResponse.json();
             allRepos = allRepos.concat(reposData);
             hasMoreRepos = reposData.length === perPage;
@@ -51,7 +55,9 @@ export const fetchUserDetails = async (username: string) => {
         let totalStars = 0;
         let hasMoreStars = true;
         while (hasMoreStars) {
-            const starsResponse = await fetch(`${starsUrl}?page=${page}&per_page=${perPage}`);
+            const starsResponse = await fetch(`${starsUrl}?page=${page}&per_page=${perPage}`,{
+                cache: 'force-cache',
+            });
             const starsData = await starsResponse.json();
             totalStars += starsData.length;
             hasMoreStars = starsData.length === perPage;
@@ -70,9 +76,11 @@ export const fetchUserDetails = async (username: string) => {
             notForkedRepos,
         };
 
+        console.timeEnd('fetchUserDetails');
         return data;
     } catch (error) {
         console.error(error);
+        console.timeEnd('fetchUserDetails');
         return null;
     }
 }
