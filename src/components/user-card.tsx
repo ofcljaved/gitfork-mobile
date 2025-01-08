@@ -22,6 +22,8 @@ export const SmallUserCard = ({ user }: { user: UserDetails }) => {
                     height={164}
                     src={user.avatarUrl}
                     alt="Profile"
+                    priority
+                    loading="eager"
                     className="w-16 h-16 rounded-lg shadow-sm border border-primary"
                 />
                 <div className="grid items-start">
@@ -47,6 +49,8 @@ export const UserCard = ({ user, small }: { user: UserDetails, small?: boolean }
                     height={564}
                     src={user.avatarUrl}
                     alt="Profile"
+                    priority
+                    loading="eager"
                     className="w-32 h-32 mx-6 rounded-lg z-10 shadow-sm border border-primary row-start-1 row-end-3 col-start-1"
                 />
                 <div className="p-6 border border-muted-foreground/30 rounded-xl grid gap-6 items-start row-start-2 row-end-4 col-start-1 grid-rows-subgrid">
