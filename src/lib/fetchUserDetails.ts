@@ -24,17 +24,12 @@ export interface UserStars {
   totalStars: number;
 }
 
-export interface UserDetails {
-  username: string;
-  avatarUrl: string;
-  name: string;
-  bio: string;
-  followers: number;
-  publicRepos: number;
-  totalStars: number;
+export interface UserRepos {
   forkedRepos: Repo[];
   notForkedRepos: Repo[];
 }
+
+export interface UserDetails extends UserData, UserStars, UserRepos {}
 
 const fetchUserData = async (username: string): Promise<UserData | null> => {
   const userUrl = `${API_URL}/${username}`;
@@ -44,6 +39,7 @@ const fetchUserData = async (username: string): Promise<UserData | null> => {
     });
     if (!userResponse.ok) throw new Error("Failed to fetch user data");
     const userData = await userResponse.json();
+
     return {
       username: userData.login,
       avatarUrl: userData.avatar_url,
@@ -55,6 +51,7 @@ const fetchUserData = async (username: string): Promise<UserData | null> => {
   } catch (error) {
     console.error("Error fetching user data", { cause: error });
     return null;
+  } finally {
   }
 };
 
@@ -88,53 +85,23 @@ const fetchUserStarCount = async (
   }
 };
 
-export interface UserAndStars extends UserData, UserStars {}
-export const fetchUserAndStars = async (
-  username: string,
-): Promise<UserAndStars | null> => {
-  const initialData: UserAndStars = {
-    username: "",
-    avatarUrl: "",
-    name: "",
-    bio: "",
-    followers: 0,
-    publicRepos: 0,
-    totalStars: 0,
-  };
-  try {
-    const response = await Promise.allSettled([
-      fetchUserData(username),
-      fetchUserStarCount(username),
-    ]);
-    const responseData = response.reduce<UserAndStars>((obj, curr) => {
-      if (curr.status === "fulfilled") {
-        obj = { ...obj, ...curr.value };
-      }
-      return obj;
-    }, initialData);
-    return responseData;
-  } catch (error) {
-    console.error("Error fetching user and stars", { cause: error });
-    return null;
-  }
-};
-
-export const fetchUserRepos = async (username: string) => {
-  const userUrl = `${API_URL}/${username}`;
+const fetchUserRepos = async (username: string): Promise<UserRepos | null> => {
   const reposUrl = `${API_URL}/${username}/repos`;
   const perPage = 100;
 
   try {
-    const userResponse = await fetch(userUrl);
-    if (!userResponse.ok) throw new Error("Failed to fetch user data");
-    const userData = await userResponse.json();
-    const totalRepoPages = Math.ceil(userData.public_repos / perPage);
+    const userData = await fetchUserData(username);
+    if (!userData) throw new Error("Failed to fetch user data");
+    const totalRepoPages = Math.ceil(userData.publicRepos / perPage);
 
     const repoRequests = Array.from(
       { length: totalRepoPages },
       async (_, i) => {
         const res = await fetch(
           `${reposUrl}?page=${i + 1}&per_page=${perPage}&sort=updated`,
+          {
+            cache: "force-cache",
+          },
         );
         return await res.json();
       },
@@ -173,71 +140,40 @@ export const fetchUserRepos = async (username: string) => {
     return allRepos;
   } catch (error) {
     console.error(error);
+    return null;
   }
 };
 
-export const fetchUserDetails = async (username: string) => {
-  const reposUrl = `${API_URL}/${username}/repos`;
-  const perPage = 100;
-  console.time("fetchUserDetails");
-
+export const fetchUserDetails = async (
+  username: string,
+): Promise<UserDetails> => {
+  const initialData = {
+    username: "",
+    avatarUrl: "",
+    name: "",
+    bio: "",
+    followers: 0,
+    publicRepos: 0,
+    totalStars: 0,
+    forkedRepos: [],
+    notForkedRepos: [],
+  };
   try {
-    const userData = await fetchUserData(username);
-    if (!userData) throw new Error("Failed to fetch user data");
+    const [userData, userStars, userRepos] = await Promise.all([
+      fetchUserData(username),
+      fetchUserStarCount(username),
+      fetchUserRepos(username),
+    ]);
+    if (!userData || !userStars || !userRepos)
+      throw new Error("Failed to fetch user data");
 
-    const totalRepoPages = Math.ceil(userData.publicRepos / perPage);
-
-    const repoRequests = Array.from({ length: totalRepoPages }, (_, i) =>
-      fetch(`${reposUrl}?page=${i + 1}&per_page=${perPage}`, {
-        cache: "force-cache",
-      }),
-    );
-
-    const repoResponses = await Promise.all(repoRequests);
-    const allRepos = repoResponses.flat();
-    //
-    ////let hasMoreRepos = true;
-    ////let page = 1;
-    ////let allRepos: Repo[] = [];
-    ////while (hasMoreRepos) {
-    ////    const reposResponse = await fetch(`${reposUrl}?page=${page}&per_page=${perPage}`, {
-    ////        cache: 'force-cache',
-    ////    });
-    ////    const reposData = await reposResponse.json();
-    ////    allRepos = allRepos.concat(reposData);
-    ////    hasMoreRepos = reposData.length === perPage;
-    ////    page++;
-    ////}
-    const forkedRepos = allRepos
-      .filter((repo) => repo.fork)
-      .sort(
-        (a, b) =>
-          new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
-      );
-    const notForkedRepos = allRepos
-      .filter((repo) => !repo.fork)
-      .sort(
-        (a, b) =>
-          new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
-      );
-
-    const data = {
-      username: userData.login,
-      avatarUrl: userData.avatar_url,
-      name: userData.name,
-      bio: userData.bio,
-      followers: userData.followers,
-      publicRepos: userData.public_repos,
-      totalStars: Number(noOfStars || 0),
-      forkedRepos,
-      notForkedRepos,
+    return {
+      ...userData,
+      ...userStars,
+      ...userRepos,
     };
-
-    console.timeEnd("fetchUserDetails");
-    return data;
   } catch (error) {
-    console.error(error);
-    console.timeEnd("fetchUserDetails");
-    return null;
+    console.error("Error fetching user details", { cause: error });
+    return initialData;
   }
 };
