@@ -1,3 +1,5 @@
+const { hairlineWidth } = require("nativewind/theme");
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -8,73 +10,59 @@ module.exports = {
   presets: [require("nativewind/preset")],
   theme: {
     extend: {
-      willChange: {
-        blob: "transform, border-radius",
-      },
-      animation: {
-        rotate: "rotate 8s linear infinite alternate",
-        blob: "morph 10s linear infinite alternate, spin-blob 26s linear infinite reverse",
-      },
-      keyframes: {
-        rotate: {
-          "0%, 100%": { "--angle": "120deg" },
-          "50%": { "--angle": "170deg" },
-        },
-        morph: {
-          "0%": { "border-radius": "27% 73% 71% 29% / 52% 38% 62% 48%" },
-          "100%": { "border-radius": "45% 55% 29% 71% / 64% 31% 69% 36%" },
-        },
-        "spin-blob": {
-          "100%": { transform: "rotate(1turn)" },
-        },
-      },
       colors: {
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
+        background: withOpacity("background"),
+        foreground: withOpacity("foreground"),
         card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
+          DEFAULT: withOpacity("card"),
+          foreground: withOpacity("card-foreground"),
         },
         popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
+          DEFAULT: withOpacity("popover"),
+          foreground: withOpacity("popover-foreground"),
         },
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          DEFAULT: withOpacity("primary"),
+          foreground: withOpacity("primary-foreground"),
         },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
+          DEFAULT: withOpacity("secondary"),
+          foreground: withOpacity("secondary-foreground"),
         },
         muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
+          DEFAULT: withOpacity("muted"),
+          foreground: withOpacity("muted-foreground"),
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
+          DEFAULT: withOpacity("accent"),
+          foreground: withOpacity("accent-foreground"),
         },
         destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
+          DEFAULT: withOpacity("destructive"),
+          foreground: withOpacity("destructive-foreground"),
         },
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        chart: {
-          1: "hsl(var(--chart-1))",
-          2: "hsl(var(--chart-2))",
-          3: "hsl(var(--chart-3))",
-          4: "hsl(var(--chart-4))",
-          5: "hsl(var(--chart-5))",
-        },
+        border: withOpacity("border"),
+        input: withOpacity("input"),
+        ring: withOpacity("ring"),
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      borderWidth: {
+        hairline: hairlineWidth(),
+      },
     },
   },
+  plugins: [],
 };
+
+function withOpacity(variableName) {
+  return ({ opacityValue }) => {
+    if (opacityValue !== undefined) {
+      return `rgb(var(--${variableName}) / ${opacityValue})`;
+    }
+    return `rgb(var(--${variableName}))`;
+  };
+}

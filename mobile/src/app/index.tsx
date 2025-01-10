@@ -1,16 +1,20 @@
+import { fetchUser } from "@/actions/fetchUser";
 import { Container } from "@/components/Container";
-import { Stack } from "expo-router";
+import { useQuery } from "@tanstack/react-query";
 import { Text } from "react-native";
+import { useEffect } from "react";
 
-export default function Index() {
+export default function Home() {
+    const { data, isLoading } = useQuery({
+        queryKey: ["user"],
+        queryFn: fetchUser,
+    });
+    console.log(data);
     return (
-        <>
-            <Stack.Screen options={{ title: 'Home' }} />
-            <Container>
-                <Text className="text-primary">
-                    Hello, Dan!
-                </Text>
-            </Container>
-        </>
+        <Container>
+            <Text className="text-primary">
+                Hello, Dan!
+            </Text>
+        </Container>
     );
 }
