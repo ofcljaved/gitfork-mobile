@@ -1,4 +1,6 @@
-export async function fetchUser(username:string) {
+import { UserDetails } from "@/types";
+
+export async function fetchUser(username:string): Promise<UserDetails | null> {
   try {
     const response = await fetch(
       `https://gitfrk.vercel.app/api/v1/user?name=${username}`,

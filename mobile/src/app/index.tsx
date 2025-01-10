@@ -4,6 +4,8 @@ import { skipToken, useQuery } from "@tanstack/react-query";
 import { Text } from "react-native";
 import { useState } from "react";
 import SearchBar from "@/components/search-bar";
+import { UserCard } from "@/components/user-card";
+import { RepoList } from "@/components/repo-list";
 
 export default function Home() {
     const [search, setSearch] = useState<string>("");
@@ -11,7 +13,6 @@ export default function Home() {
         queryKey: ["user", search],
         queryFn: !!search ? () => fetchUser(search) : skipToken,
     });
-    console.log(data);
     function handleSubmit(value: string) {
         setSearch(value.trim());
     }
@@ -20,11 +21,8 @@ export default function Home() {
         <Container>
             <SearchBar onSubmit={handleSubmit} />
             {isLoading && <Text>Loading...</Text>}
-            {!isLoading && (
-                <Text>
-                    Hello, Dan!
-                </Text>
-            )}
+            {data && <UserCard user={data} />}
+            {data && <RepoList original={data.notForkedRepos} forked={data.forkedRepos} />}
         </Container >
     );
 }
