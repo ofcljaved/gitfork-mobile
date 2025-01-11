@@ -29,6 +29,9 @@ importers:
       '@react-navigation/native':
         specifier: ^7.0.14
         version: 7.0.14(react-native@0.76.5(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.3.18)(react@18.3.1))(react@18.3.1)
+      '@repo/utils':
+        specifier: workspace:*
+        version: link:../packages/utils
       '@tanstack/react-query':
         specifier: ^5.63.0
         version: 5.63.0(react@18.3.1)
@@ -114,6 +117,19 @@ importers:
       typescript:
         specifier: ^5.3.3
         version: 5.5.4
+
+  packages/utils:
+    dependencies:
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
+      tailwind-merge:
+        specifier: ^2.6.0
+        version: 2.6.0
+    devDependencies:
+      typescript:
+        specifier: ^5.7.3
+        version: 5.7.3
 
   web:
     dependencies:
@@ -5456,6 +5472,11 @@ packages:
 
   typescript@5.5.4:
     resolution: {integrity: sha512-Mtq29sKDAEYP7aljRgtPOpTvOfbwRWlS6dPRzwjdE+C0R4brX/GUyhHSecbHMFLNBLcJIPt9nl9yG5TZ1weH+Q==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+
+  typescript@5.7.3:
+    resolution: {integrity: sha512-84MVSjMEHP+FQRPy3pX9sTVV/INIex71s9TL2Gm5FG/WG1SqXeKyZ0k7/blY/4FdOzI12CBy1vGc4og/eus0fw==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -12382,6 +12403,8 @@ snapshots:
       reflect.getprototypeof: 1.0.10
 
   typescript@5.5.4: {}
+
+  typescript@5.7.3: {}
 
   ua-parser-js@1.0.40: {}
 

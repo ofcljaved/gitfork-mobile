@@ -3,6 +3,7 @@ import { FlatList, Text, TouchableOpacity, View } from "react-native";
 import Feather from '@expo/vector-icons/Feather';
 import Octicons from '@expo/vector-icons/Octicons';
 import EvilIcons from '@expo/vector-icons/EvilIcons';
+import { timesAgo } from "@repo/utils";
 
 export const RepoList = ({
     original,
@@ -55,7 +56,7 @@ const RepoCard = ({ repo }: { repo: Repo }) => {
                 </View>
                 <View className="flex-row">
                     <EvilIcons name="clock" size={24} color="black" />
-                    <Text>{repo.updated_at}</Text>
+                    <Text>{timesAgo(new Date(repo.updated_at))}</Text>
                 </View>
             </View>
         </View>
