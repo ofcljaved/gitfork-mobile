@@ -12,3 +12,4 @@ export const LINES = [
 ];
 
 export const NO_BIO = "~No bio... YOU must think very highly of yourself~";
+export const NO_DESCRIPTION = "~Desctiption? Nah, who needs context anyway~";
