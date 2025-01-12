@@ -66,12 +66,28 @@ export default function Home() {
 
         return path;
     };
+    const testCreateWavePath = () => {
+        const path = Skia.Path.Make();
+        path.moveTo(-10, height / 2);
+        for (let x = -10; x < width + 20; x += 5) {
+            const y = Math.sin((2 * Math.PI * x) / width);
+            path.lineTo(x, y + height / 2);
+        }
+        return path;
+    };
+
     const colors = ["#38bdf8", "#818cf8", "#c084fc", "#e879f9", "#22d3ee"];
     return (
         <Canvas style={{ flex: 1, backgroundColor: "black" }}>
             <Paint color="black" style="fill" />
+            <Path
+                path={testCreateWavePath()}
+                color="blue"
+                style="stroke"
+                strokeWidth={15}
+            />
 
-            {colors.map((color, index) => (
+            {[].map((color, index) => (
                 <Path
                     key={index}
                     path={createWavePath(
