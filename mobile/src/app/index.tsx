@@ -37,41 +37,18 @@ export default function Home() {
     //    return path;
     //};
 
-    const createWavePath = (
-        amplitude: number,
-        frequency: number,
-        startHeight: number,
-        endHeight: number
-    ) => {
+    const createWavePath = () => {
         const path = Skia.Path.Make();
         const middleHeight = height / 2;
+        const amplitude = 30;
+        const frequency = 2 * Math.PI / width;
+        const phase = Math.random() * 5 * Math.PI;
 
-        // Start from the specified start height
-        path.moveTo(-10, startHeight);
+        path.moveTo(-10, middleHeight);
 
-        // Loop to create the wave
         for (let x = -10; x < width + 20; x += 5) {
-            const y =
-                amplitude *
-                Math.sin(
-                    (2 * Math.PI * frequency * x) /
-                    width // Adjust frequency for multiple tides
-                ) +
-                middleHeight; // Base height
-            path.lineTo(x, y);
-        }
-
-        // Move to the end height for smooth transitions
-        path.lineTo(width + 20, endHeight);
-
-        return path;
-    };
-    const testCreateWavePath = () => {
-        const path = Skia.Path.Make();
-        path.moveTo(-10, height / 2);
-        for (let x = -10; x < width + 20; x += 5) {
-            const y = Math.sin((2 * Math.PI * x) / width);
-            path.lineTo(x, y + height / 2);
+            const y = amplitude * Math.sin(frequency * x + phase);
+            path.lineTo(x, y + middleHeight);
         }
         return path;
     };
@@ -80,22 +57,11 @@ export default function Home() {
     return (
         <Canvas style={{ flex: 1, backgroundColor: "black" }}>
             <Paint color="black" style="fill" />
-            <Path
-                path={testCreateWavePath()}
-                color="blue"
-                style="stroke"
-                strokeWidth={15}
-            />
 
-            {[].map((color, index) => (
+            {colors.map((color, index) => (
                 <Path
                     key={index}
-                    path={createWavePath(
-                        50 - index * 10, // Reduced amplitude
-                        1.5 + index * 0.1, // Frequency adjustment for one high, two lows
-                        height / 2 - index * 15, // Starting Y-axis height variation
-                        height / 2 + index * 15 // Ending Y-axis height variation
-                    )}
+                    path={createWavePath()}
                     style="stroke"
                     strokeWidth={15}
                     opacity={0.5}
