@@ -2,11 +2,12 @@ import { fetchUser } from "@/actions/fetchUser";
 import { Container } from "@/components/Container";
 import { skipToken, useQuery } from "@tanstack/react-query";
 import { Dimensions, Text } from "react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SearchBar from "@/components/search-bar";
 import { UserCard } from "@/components/user-card";
 import { RepoList } from "@/components/repo-list";
 import { Canvas, Circle, Group, LinearGradient, Paint, Path, Skia, vec } from "@shopify/react-native-skia";
+import { useDerivedValue, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
 const { width, height } = Dimensions.get("window");
 export default function Home() {
     const [search, setSearch] = useState<string>("");
@@ -37,12 +38,13 @@ export default function Home() {
     //    return path;
     //};
 
-    const createWavePath = () => {
+    const [phase, setPhase] = useState(0);
+    const createWavePath = (phase: number) => {
         const path = Skia.Path.Make();
         const middleHeight = height / 2;
         const amplitude = 30;
         const frequency = 2 * Math.PI / width;
-        const phase = Math.random() * 5 * Math.PI;
+        //const phase = Math.random() * 5 * Math.PI;
 
         path.moveTo(-10, middleHeight);
 
@@ -53,15 +55,24 @@ export default function Home() {
         return path;
     };
 
+    useEffect(() => {
+        setPhase(prev => prev + 0.01);
+    }, [phase]);
     const colors = ["#38bdf8", "#818cf8", "#c084fc", "#e879f9", "#22d3ee"];
     return (
         <Canvas style={{ flex: 1, backgroundColor: "black" }}>
             <Paint color="black" style="fill" />
+            <Path
+                path={createWavePath(phase)}
+                style="stroke"
+                strokeWidth={15}
+                color="blue"
+            />
 
-            {colors.map((color, index) => (
+            {[].map((color, index) => (
                 <Path
                     key={index}
-                    path={createWavePath()}
+                    path={createWavePath(phase)}
                     style="stroke"
                     strokeWidth={15}
                     opacity={0.5}
