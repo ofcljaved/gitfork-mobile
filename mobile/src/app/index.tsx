@@ -6,8 +6,8 @@ import { useEffect, useState } from "react";
 import SearchBar from "@/components/search-bar";
 import { UserCard } from "@/components/user-card";
 import { RepoList } from "@/components/repo-list";
-import { Canvas, Circle, Group, LinearGradient, Paint, Path, Skia, vec } from "@shopify/react-native-skia";
-import { useDerivedValue, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
+import { Canvas, Circle, Group, LinearGradient, Paint, Path, Skia, usePathValue, vec } from "@shopify/react-native-skia";
+import { Easing, useDerivedValue, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
 const { width, height } = Dimensions.get("window");
 export default function Home() {
     const [search, setSearch] = useState<string>("");
@@ -38,52 +38,71 @@ export default function Home() {
     //    return path;
     //};
 
-    const [phase, setPhase] = useState(0);
-    const createWavePath = (phase: number) => {
-        const path = Skia.Path.Make();
-        const middleHeight = height / 2;
-        const amplitude = 30;
-        const frequency = 2 * Math.PI / width;
-        //const phase = Math.random() * 5 * Math.PI;
-
-        path.moveTo(-10, middleHeight);
-
-        for (let x = -10; x < width + 20; x += 5) {
-            const y = amplitude * Math.sin(frequency * x + phase);
-            path.lineTo(x, y + middleHeight);
-        }
-        return path;
-    };
-
-    useEffect(() => {
-        setPhase(prev => prev + 0.01);
-    }, [phase]);
     const colors = ["#38bdf8", "#818cf8", "#c084fc", "#e879f9", "#22d3ee"];
     return (
         <Canvas style={{ flex: 1, backgroundColor: "black" }}>
-            <Paint color="black" style="fill" />
-            <Path
-                path={createWavePath(phase)}
-                style="stroke"
-                strokeWidth={15}
-                color="blue"
-            />
-
-            {[].map((color, index) => (
-                <Path
-                    key={index}
-                    path={createWavePath(phase)}
-                    style="stroke"
-                    strokeWidth={15}
-                    opacity={0.5}
-                >
-                    <LinearGradient
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: width, y: 0 }}
-                        colors={[color, colors[(index >= colors.length - 1) ? 0 : index + 1]]}
+            <Group>
+                {colors.map((color, index) => (
+                    <Wave
+                        key={index}
+                        color={color}
+                        nextColor={colors[(index + 1) % colors.length]}
+                        intialPhase={Math.random() * 5 * Math.PI}
                     />
-                </Path>
-            ))}
+                ))}
+            </Group>
         </Canvas>
+    );
+}
+
+const Wave = ({
+    color,
+    nextColor,
+    intialPhase = 0,
+}: {
+    color: string,
+    nextColor: string,
+    intialPhase?: number,
+}) => {
+    const phase = useSharedValue(intialPhase);
+    const wavePath = Skia.Path.Make();
+    const middleHeight = height / 2;
+    const amplitude = 30;
+    const frequency = 2 * Math.PI / width;
+
+    const animatedPath = usePathValue((path) => {
+        "worklet";
+        path.reset();
+        path.moveTo(-10, middleHeight);
+
+        for (let x = -10; x < width + 20; x += 5) {
+            const y = amplitude * Math.sin(frequency * x + phase.value);
+            path.lineTo(x, y + middleHeight);
+        }
+    }, wavePath);
+
+    useEffect(() => {
+        phase.value = withRepeat(
+            withTiming(Math.random() * 2 * Math.PI, {
+                duration: 8000,
+                easing: Easing.linear,
+            }),
+            -1,
+            false
+        );
+    }, []);
+    return (
+        <Path
+            path={animatedPath}
+            style="stroke"
+            strokeWidth={15}
+            opacity={0.5}
+        >
+            <LinearGradient
+                start={{ x: 0, y: 0 }}
+                end={{ x: width, y: 0 }}
+                colors={[color, nextColor]}
+            />
+        </Path>
     );
 }
