@@ -7,7 +7,7 @@ import SearchBar from "@/components/search-bar";
 import { UserCard } from "@/components/user-card";
 import { RepoList } from "@/components/repo-list";
 import { Blur, Canvas, Circle, Group, LinearGradient, Paint, Path, Skia, usePathValue, vec } from "@shopify/react-native-skia";
-import { Easing, useDerivedValue, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
+import { Easing, useDerivedValue, useSharedValue, withRepeat, withSequence, withTiming } from "react-native-reanimated";
 const { width, height } = Dimensions.get("window");
 export default function Home() {
     const [search, setSearch] = useState<string>("");
@@ -28,17 +28,70 @@ export default function Home() {
     //    </Container >
     //);
 
+    const wavePath = Skia.Path.Make();
+    const middleHeight = (height / 2.5) + Math.random() * 5;
+    const baseAmplitude = 20;
+    const frequency = 2 * Math.PI / width;
+
+    const animatedAmplitude = useSharedValue(baseAmplitude);
+
+    // Set up the animation
+    useEffect(() => {
+        animatedAmplitude.value = withRepeat(
+            withSequence(
+                withTiming(-2 * baseAmplitude, { duration: 4000, easing: Easing.inOut(Easing.sin) }),
+                withTiming(baseAmplitude, { duration: 4000, easing: Easing.inOut(Easing.sin) }),
+            ),
+            -1,
+            false // Reverse the animation
+        );
+    }, [animatedAmplitude]);
+
+    //const randomAmplitudes = [
+    //    Math.random() * baseAmplitude,
+    //    Math.random() * (baseAmplitude / 8),
+    //];
+    //
+    //const randomPhaseOffsets = [
+    //    Math.random() * Math.PI * 2,
+    //    Math.random() * Math.PI * 2,
+    //];
+
+    const animatedPath = usePathValue((path) => {
+        "worklet";
+        path.reset();
+        path.moveTo(-10, middleHeight);
+
+        for (let x = -10; x < width + 20; x += 5) {
+            const amplitude = animatedAmplitude.value;
+            //const y = amplitude * Math.sin(frequency * x) +
+            //    amplitude * Math.sin(frequency * 1.5 * x);
+
+            const y = baseAmplitude * Math.sin(frequency * x) +
+                (amplitude / 2) * Math.sin((frequency * 1.5) * x) +
+                (amplitude / 3) * Math.sin((frequency * 1.5) * x);
+            path.lineTo(x, y + middleHeight);
+        }
+    }, wavePath);
     const colors = ["#38bdf8", "#818cf8", "#c084fc", "#e879f9", "#22d3ee"];
     return (
         <Canvas style={{ flex: 1, backgroundColor: "black" }}>
+            <Path
+                path={animatedPath}
+                style="stroke"
+                strokeWidth={25}
+                opacity={0.5}
+                color="blue"
+            >
+                <Blur blur={6} />
+            </Path>
             <Group>
-                {colors.map((color, index) => (
+                {[].map((color, index) => (
                     <Wave
                         key={index}
                         color={color}
                         nextColor={colors[(index + 1) % colors.length]}
-                        intialPhase={Math.random() * 5 * Math.PI}
-                        index={index}
+                        initialPhase={Math.random() * 5 * Math.PI}
                     />
                 ))}
             </Group>
@@ -49,15 +102,12 @@ export default function Home() {
 const Wave = ({
     color,
     nextColor,
-    intialPhase = 0,
-    index,
+    initialPhase = 0,
 }: {
     color: string,
     nextColor: string,
-    intialPhase?: number,
-    index: number,
+    initialPhase?: number,
 }) => {
-    const phase = useSharedValue(intialPhase);
     const wavePath = Skia.Path.Make();
     const middleHeight = (height / 2.5) + Math.random() * 5;
     const baseAmplitude = 50;
@@ -80,22 +130,12 @@ const Wave = ({
 
         for (let x = -10; x < width + 20; x += 5) {
             const y =
-                randomAmplitudes[0] * Math.sin(frequency * x + phase.value + randomPhaseOffsets[0]) +
-                randomAmplitudes[1] * Math.sin(frequency * 2 * x + phase.value + randomPhaseOffsets[1])
+                randomAmplitudes[0] * Math.sin(frequency * x + initialPhase + randomPhaseOffsets[0]) +
+                randomAmplitudes[1] * Math.sin(frequency * 2 * x + initialPhase + randomPhaseOffsets[1])
 
             path.lineTo(x, y + middleHeight);
         }
     }, wavePath);
-    useEffect(() => {
-        phase.value = withRepeat(
-            withTiming(phase.value + (-2 * Math.PI), {
-                duration: 6000 + (Math.random() * 10000),
-                easing: Easing.linear,
-            }),
-            -1,
-            false
-        );
-    }, []);
     return (
         <Path
             path={animatedPath}
@@ -112,3 +152,4 @@ const Wave = ({
         </Path>
     );
 }
+
