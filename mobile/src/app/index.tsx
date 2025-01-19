@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import SearchBar from "@/components/search-bar";
 import { UserCard } from "@/components/user-card";
 import { RepoList } from "@/components/repo-list";
-import { Canvas, Circle, Group, LinearGradient, Paint, Path, Skia, usePathValue, vec } from "@shopify/react-native-skia";
+import { Blur, Canvas, Circle, Group, LinearGradient, Paint, Path, Skia, usePathValue, vec } from "@shopify/react-native-skia";
 import { Easing, useDerivedValue, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
 const { width, height } = Dimensions.get("window");
 export default function Home() {
@@ -28,16 +28,6 @@ export default function Home() {
     //    </Container >
     //);
 
-    //const createWavePath = (amplitude: number, frequency: number) => {
-    //    const path = Skia.Path.Make();
-    //    path.moveTo(-10, height / 2);
-    //    for (let x = -10; x < width +20; x += 5) {
-    //        const y = amplitude * Math.sin((2 * Math.PI * frequency * x) / width);
-    //        path.lineTo(x, y + height / 2);
-    //    }
-    //    return path;
-    //};
-
     const colors = ["#38bdf8", "#818cf8", "#c084fc", "#e879f9", "#22d3ee"];
     return (
         <Canvas style={{ flex: 1, backgroundColor: "black" }}>
@@ -48,6 +38,7 @@ export default function Home() {
                         color={color}
                         nextColor={colors[(index + 1) % colors.length]}
                         intialPhase={Math.random() * 5 * Math.PI}
+                        index={index}
                     />
                 ))}
             </Group>
@@ -59,16 +50,28 @@ const Wave = ({
     color,
     nextColor,
     intialPhase = 0,
+    index,
 }: {
     color: string,
     nextColor: string,
     intialPhase?: number,
+    index: number,
 }) => {
     const phase = useSharedValue(intialPhase);
     const wavePath = Skia.Path.Make();
-    const middleHeight = height / 2;
-    const amplitude = 30;
+    const middleHeight = (height / 2.5) + Math.random() * 5;
+    const baseAmplitude = 50;
     const frequency = 2 * Math.PI / width;
+
+    const randomAmplitudes = [
+        Math.random() * baseAmplitude,
+        Math.random() * (baseAmplitude / 8),
+    ];
+
+    const randomPhaseOffsets = [
+        Math.random() * Math.PI * 2,
+        Math.random() * Math.PI * 2,
+    ];
 
     const animatedPath = usePathValue((path) => {
         "worklet";
@@ -76,15 +79,17 @@ const Wave = ({
         path.moveTo(-10, middleHeight);
 
         for (let x = -10; x < width + 20; x += 5) {
-            const y = amplitude * Math.sin(frequency * x + phase.value);
+            const y =
+                randomAmplitudes[0] * Math.sin(frequency * x + phase.value + randomPhaseOffsets[0]) +
+                randomAmplitudes[1] * Math.sin(frequency * 2 * x + phase.value + randomPhaseOffsets[1])
+
             path.lineTo(x, y + middleHeight);
         }
     }, wavePath);
-
     useEffect(() => {
         phase.value = withRepeat(
-            withTiming(Math.random() * 2 * Math.PI, {
-                duration: 8000,
+            withTiming(phase.value + (-2 * Math.PI), {
+                duration: 6000 + (Math.random() * 10000),
                 easing: Easing.linear,
             }),
             -1,
@@ -95,7 +100,7 @@ const Wave = ({
         <Path
             path={animatedPath}
             style="stroke"
-            strokeWidth={15}
+            strokeWidth={25}
             opacity={0.5}
         >
             <LinearGradient
@@ -103,6 +108,7 @@ const Wave = ({
                 end={{ x: width, y: 0 }}
                 colors={[color, nextColor]}
             />
+            <Blur blur={6} />
         </Path>
     );
 }
