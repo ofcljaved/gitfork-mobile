@@ -7,7 +7,7 @@ import SearchBar from "@/components/search-bar";
 import { UserCard } from "@/components/user-card";
 import { RepoList } from "@/components/repo-list";
 import { Blur, Canvas, Circle, Group, LinearGradient, Paint, Path, Skia, usePathValue, vec } from "@shopify/react-native-skia";
-import { Easing, useDerivedValue, useSharedValue, withRepeat, withSequence, withTiming } from "react-native-reanimated";
+import { Easing, interpolate, useDerivedValue, useSharedValue, withRepeat, withSequence, withTiming } from "react-native-reanimated";
 const { width, height } = Dimensions.get("window");
 export default function Home() {
     const [search, setSearch] = useState<string>("");
@@ -30,32 +30,19 @@ export default function Home() {
 
     const wavePath = Skia.Path.Make();
     const middleHeight = (height / 2.5) + Math.random() * 5;
-    const baseAmplitude = 20;
+    const baseAmplitude = 25;
     const frequency = 2 * Math.PI / width;
 
-    const animatedAmplitude = useSharedValue(baseAmplitude);
+    const animatedAmplitude = useSharedValue(0);
 
     // Set up the animation
     useEffect(() => {
         animatedAmplitude.value = withRepeat(
-            withSequence(
-                withTiming(-2 * baseAmplitude, { duration: 4000, easing: Easing.inOut(Easing.sin) }),
-                withTiming(baseAmplitude, { duration: 4000, easing: Easing.inOut(Easing.sin) }),
-            ),
+            withTiming(100, { duration: 4000, easing: Easing.bezier(0.42, 0, 0.58, 1) }),
             -1,
-            false // Reverse the animation
+            true
         );
     }, [animatedAmplitude]);
-
-    //const randomAmplitudes = [
-    //    Math.random() * baseAmplitude,
-    //    Math.random() * (baseAmplitude / 8),
-    //];
-    //
-    //const randomPhaseOffsets = [
-    //    Math.random() * Math.PI * 2,
-    //    Math.random() * Math.PI * 2,
-    //];
 
     const animatedPath = usePathValue((path) => {
         "worklet";
@@ -63,10 +50,7 @@ export default function Home() {
         path.moveTo(-10, middleHeight);
 
         for (let x = -10; x < width + 20; x += 5) {
-            const amplitude = animatedAmplitude.value;
-            //const y = amplitude * Math.sin(frequency * x) +
-            //    amplitude * Math.sin(frequency * 1.5 * x);
-
+            const amplitude = interpolate(animatedAmplitude.value, [0, 100], [-2 * baseAmplitude, baseAmplitude, 2 * baseAmplitude]);
             const y = baseAmplitude * Math.sin(frequency * x) +
                 (amplitude / 2) * Math.sin((frequency * 1.5) * x) +
                 (amplitude / 3) * Math.sin((frequency * 1.5) * x);
