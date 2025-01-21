@@ -33,16 +33,31 @@ export default function Home() {
     const baseAmplitude = 25;
     const frequency = 2 * Math.PI / width;
 
-    const animatedAmplitude = useSharedValue(0);
+    //const animatedAmplitude = useSharedValue(0);
+    const crestAmplitude = useSharedValue(0);
+    const troughAmplitude = useSharedValue(0);
+    const animatedPhase = useSharedValue(0); // Global phase for smoothness
 
-    // Set up the animation
+    // Set up the animations
     useEffect(() => {
-        animatedAmplitude.value = withRepeat(
-            withTiming(100, { duration: 4000, easing: Easing.bezier(0.42, 0, 0.58, 1) }),
+        crestAmplitude.value = withRepeat(
+            withTiming(100, { duration: 3000, easing: Easing.bezier(0.42, 0, 0.58, 1) }),
             -1,
             true
         );
-    }, [animatedAmplitude]);
+
+        troughAmplitude.value = withRepeat(
+            withTiming(80, { duration: 5000, easing: Easing.bezier(0.25, 0.1, 0.25, 1) }),
+            -1,
+            true
+        );
+        animatedPhase.value = withRepeat(
+            withTiming(2 * Math.PI, { duration: 6000, easing: Easing.linear }),
+            -1,
+            false
+        );
+
+    }, [crestAmplitude, troughAmplitude, animatedPhase]);
 
     const animatedPath = usePathValue((path) => {
         "worklet";
@@ -50,13 +65,27 @@ export default function Home() {
         path.moveTo(-10, middleHeight);
 
         for (let x = -10; x < width + 20; x += 5) {
-            const amplitude = interpolate(animatedAmplitude.value, [0, 100], [-2 * baseAmplitude, baseAmplitude, 2 * baseAmplitude]);
-            const y = baseAmplitude * Math.sin(frequency * x) +
-                (amplitude / 2) * Math.sin((frequency * 1.5) * x) +
-                (amplitude / 3) * Math.sin((frequency * 1.5) * x);
+            const crest = interpolate(
+                crestAmplitude.value,
+                [0, 100],
+                [-2 * baseAmplitude, baseAmplitude, 2 * baseAmplitude]
+            );
+            const trough = interpolate(
+                troughAmplitude.value,
+                [0, 100],
+                [-2 * baseAmplitude, baseAmplitude, 2 * baseAmplitude]
+            );
+
+            const globalPhase = animatedPhase.value;
+
+            const y = crest * Math.sin(frequency * x + globalPhase) +
+            (trough / 2) * Math.sin((frequency * 1.5) * x + Math.PI / 2 + globalPhase) +
+            (crest / 3) * Math.sin((frequency * 1.5) * x + Math.PI + globalPhase);
+
             path.lineTo(x, y + middleHeight);
         }
     }, wavePath);
+
     const colors = ["#38bdf8", "#818cf8", "#c084fc", "#e879f9", "#22d3ee"];
     return (
         <Canvas style={{ flex: 1, backgroundColor: "black" }}>
