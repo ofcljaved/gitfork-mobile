@@ -43,10 +43,10 @@ export default function Home() {
                         key={index}
                         color={color}
                         nextColor={colors[(index + 1) % colors.length]}
-                        baseAmplitude={getRandomValue(25, 35)}
-                        crestAmplitudeEnd={getRandomValue(80, 100)}
+                        baseAmplitude={getRandomValue(20, 25)}
+                        crestAmplitudeEnd={getRandomValue(80, 90)}
                         troughAmplitudeEnd={getRandomValue(80, 100)}
-                        phaseOffset={getRandomValue(0, 6 * Math.PI)}
+                        phaseOffset={getRandomValue(0, 5 * Math.PI)}
                         animationDuration={getRandomValue(2000, 6000)}
                     />
                 ))}
@@ -74,11 +74,10 @@ const Wave = ({
 }) => {
     const wavePath = Skia.Path.Make();
     const middleHeight = useMemo(() => (height / 2.5) + Math.random() * 15, [height]);
-    const frequency = useMemo(() => 2 * Math.PI / width, [width]);
+    const frequency = useMemo(() => 1.75 * Math.PI / width, [width]);
 
     const crestAmplitude = useSharedValue(0);
     const troughAmplitude = useSharedValue(0);
-    const animatedPhase = useSharedValue(phaseOffset);
 
     const setupAnimations = (value: number, duration: number, easing: EasingFunction | EasingFunctionFactory) => {
         return withRepeat(
@@ -91,22 +90,16 @@ const Wave = ({
     useEffect(() => {
         crestAmplitude.value = setupAnimations(crestAmplitudeEnd, animationDuration, Easing.bezier(0.42, 0, 0.58, 1));
         troughAmplitude.value = setupAnimations(troughAmplitudeEnd, animationDuration * 1.5, Easing.bezier(0.25, 0.1, 0.25, 1));
-        animatedPhase.value = withRepeat(
-            withTiming(phaseOffset - (2 * Math.PI), { duration: animationDuration * 2, easing: Easing.linear }),
-            -1,
-            false
-        );
-    }, [crestAmplitude, troughAmplitude, animatedPhase]);
+    }, [crestAmplitude, troughAmplitude]);
 
     const calculateY = (x: number) => {
         "worklet";
         const crest = interpolate(crestAmplitude.value, [0, crestAmplitudeEnd], [-2 * baseAmplitude, baseAmplitude, 2 * baseAmplitude]);
         const trough = interpolate(troughAmplitude.value, [0, troughAmplitudeEnd], [-2 * baseAmplitude, baseAmplitude, 2 * baseAmplitude]);
-        const globalPhase = animatedPhase.value;
 
-        return crest * Math.sin(frequency * x + globalPhase) +
-            (trough / 2) * Math.sin((frequency * 1.5) * x + Math.PI / 2 + globalPhase) +
-            (crest / 3) * Math.sin((frequency * 1.5) * x + Math.PI + globalPhase);
+        return crest * Math.sin(frequency * x + phaseOffset) +
+            (trough / 2) * Math.sin((frequency * 1.5) * x + Math.PI / 2 + phaseOffset) +
+            (crest / 3) * Math.sin((frequency * 1.5) * x + Math.PI + phaseOffset);
     };
     const animatedPath = usePathValue((path) => {
         "worklet";
@@ -123,14 +116,14 @@ const Wave = ({
             path={animatedPath}
             style="stroke"
             strokeWidth={30}
-            opacity={0.5}
+            opacity={0.6}
         >
             <LinearGradient
                 start={{ x: 0, y: 0 }}
                 end={{ x: width, y: 0 }}
                 colors={[color, nextColor]}
             />
-            <Blur blur={6} />
+            <Blur blur={5} />
         </Path>
     );
 }
