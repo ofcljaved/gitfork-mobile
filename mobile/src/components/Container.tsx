@@ -1,10 +1,11 @@
-import { SafeAreaView } from 'react-native';
+import { cn } from '@/lib/clsx';
+import { SafeAreaView, ViewProps } from 'react-native';
 
-export const Container = ({ children }: { children: React.ReactNode }) => {
-  return <SafeAreaView className={styles.container}>{children}</SafeAreaView>;
+interface ContainerProps extends ViewProps { }
+
+export const Container = ({ children, ...props }: ContainerProps) => {
+    return <SafeAreaView className={cn(
+        'flex flex-1 m-6 mb-0',
+        props.className
+    )}>{children}</SafeAreaView>;
 };
-
-const styles = {
-  container: 'flex flex-1 m-6 mb-0',
-};
-
