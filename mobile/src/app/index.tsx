@@ -1,7 +1,6 @@
 import { fetchUser } from "@/actions/fetchUser";
 import { Container } from "@/components/Container";
 import { skipToken, useQuery } from "@tanstack/react-query";
-import { Text } from "react-native";
 import { useState } from "react";
 import SearchBar from "@/components/search-bar";
 import { UserCard } from "@/components/user-card";
@@ -9,6 +8,7 @@ import { RepoList } from "@/components/repo-list";
 import WaveBackground from "@/components/ui/wave-background";
 import { Input, InputField, InputIcon, InputSlot } from "@/components/ui/input";
 import { AntDesign } from "@expo/vector-icons";
+import { Text } from "@/components/ui/text";
 
 export default function Home() {
     const [search, setSearch] = useState<string>("");
@@ -22,6 +22,9 @@ export default function Home() {
 
     return (
         <Container className="flex-1">
+            <Text className="text-center text-2xl font-bold">
+                GitFork
+            </Text>
             <Input
                 variant="outline"
                 size="xl"
