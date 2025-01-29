@@ -3,6 +3,7 @@ import { useEffect, useMemo } from "react";
 import { Blur, Canvas, Group, LinearGradient, Path, Skia, usePathValue } from "@shopify/react-native-skia";
 import { Easing, EasingFunction, EasingFunctionFactory, interpolate, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
 import { getRandomValue } from "@/lib/getRandomValue";
+import { useColorScheme } from "nativewind";
 
 const { width, height } = Dimensions.get("window");
 const WAVE_COLORS = ["#38bdf8", "#818cf8", "#c084fc", "#e879f9", "#22d3ee"];
@@ -37,10 +38,12 @@ interface WaveBackgroundProps extends ViewProps {
 }
 
 export default function WaveBackground({ children }: WaveBackgroundProps) {
+    const { colorScheme } = useColorScheme();
+
     return (
         <View className="relative flex-1">
             <Canvas style={{
-                backgroundColor: "black",
+                backgroundColor: colorScheme === 'dark' ? 'black' : 'white',
                 position: "absolute",
                 height: "100%",
                 width: "100%",

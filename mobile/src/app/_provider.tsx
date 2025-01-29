@@ -1,18 +1,15 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-
-import { useColorScheme } from '@/hooks/useColorScheme';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
 
 const queryClient = new QueryClient();
 
 export default function Provider({ children }: { children: React.ReactNode }) {
-    const { colorScheme } = useColorScheme();
 
     return (
         <QueryClientProvider client={queryClient}>
-            <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+            <GluestackUIProvider mode='system'>
                 {children}
-            </ThemeProvider>
+            </GluestackUIProvider>
         </QueryClientProvider>
     );
 }

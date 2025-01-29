@@ -7,6 +7,8 @@ import SearchBar from "@/components/search-bar";
 import { UserCard } from "@/components/user-card";
 import { RepoList } from "@/components/repo-list";
 import WaveBackground from "@/components/ui/wave-background";
+import { Input, InputField, InputIcon, InputSlot } from "@/components/ui/input";
+import { AntDesign } from "@expo/vector-icons";
 
 export default function Home() {
     const [search, setSearch] = useState<string>("");
@@ -19,16 +21,18 @@ export default function Home() {
     }
 
     return (
-        <WaveBackground>
-            <Container className="items-center justify-center">
-                <Text className="text-white text-4xl font-bold">
-                    Hero waves are cool
-                </Text>
-                <Text className="text-white text-2xl text-center">
-                    Leverage the power of canvas in REACT NATIVE
-                </Text>
-            </Container >
-        </WaveBackground >
+        <Container className="flex-1">
+            <Input
+                variant="outline"
+                size="xl"
+                className="rounded-lg"
+            >
+                <InputSlot>
+                    <AntDesign name="search1" size={20} color="white" />
+                </InputSlot>
+                <InputField placeholder="Enter Text here..." />
+            </Input>
+        </Container >
     );
 
 }
