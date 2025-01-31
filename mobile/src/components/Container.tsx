@@ -8,7 +8,7 @@ const STATUS_BAR_MARGIN = Constants.statusBarHeight + 5;
 
 export const Container = ({ children, ...props }: ContainerProps) => {
     return <SafeAreaView style={{ marginTop: STATUS_BAR_MARGIN }} className={cn(
-        'flex flex-1 p-6 pb-0',
+        'flex flex-1 m-6 mb-0',
         props.className
     )}>{children}</SafeAreaView>;
 };
