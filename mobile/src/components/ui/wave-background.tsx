@@ -66,6 +66,7 @@ export default function WaveBackground({ children }: WaveBackgroundProps) {
                     })}
                 </Group>
             </Canvas>
+            <View className="h-full flex-1 dark:bg-black/75 bg-white/75"/>
             <View className="absolute h-full w-full z-1">
                 {children}
             </View>

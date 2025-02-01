@@ -22,7 +22,7 @@ export const UserCardSkeleton = () => {
 
 }
 
-const StatsCardSkeleton = ({ length = 100 }) => {
+export const StatsCardSkeleton = ({ length = 100 }) => {
     return (
         <Sekelton style={{ width: length }} className="h-8">
         </Sekelton>

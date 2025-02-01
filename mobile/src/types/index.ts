@@ -27,4 +27,4 @@ export interface UserRepos {
   notForkedRepos: Repo[];
 }
 
-export interface UserDetails extends UserData, UserStars, UserRepos {}
+export interface UserDetails extends UserData, UserStars {}

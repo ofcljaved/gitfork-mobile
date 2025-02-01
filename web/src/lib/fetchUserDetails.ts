@@ -31,117 +31,98 @@ export interface UserRepos {
 
 export interface UserDetails extends UserData, UserStars, UserRepos {}
 
-const fetchUserData = async (username: string): Promise<UserData | null> => {
+export const fetchUserData = async (username: string): Promise<UserData> => {
   const userUrl = `${API_URL}/${username}`;
-  try {
-    const userResponse = await fetch(userUrl, {
-      cache: "force-cache",
-    });
-    if (!userResponse.ok) throw new Error("Failed to fetch user data");
-    const userData = await userResponse.json();
+  const userResponse = await fetch(userUrl, {
+    cache: "force-cache",
+  });
+  if (!userResponse.ok) throw new Error("Failed to fetch user data");
+  const userData = await userResponse.json();
 
-    return {
-      username: userData.login,
-      avatarUrl: userData.avatar_url,
-      name: userData.name,
-      bio: userData.bio,
-      followers: userData.followers,
-      publicRepos: userData.public_repos,
-    };
-  } catch (error) {
-    console.error("Error fetching user data", { cause: error });
-    return null;
-  } finally {
-  }
+  return {
+    username: userData.login,
+    avatarUrl: userData.avatar_url,
+    name: userData.name,
+    bio: userData.bio,
+    followers: userData.followers,
+    publicRepos: userData.public_repos,
+  };
 };
 
-const fetchUserStarCount = async (
+export const fetchUserStarCount = async (
   username: string,
-): Promise<UserStars | null> => {
+): Promise<UserStars> => {
   const starsUrl = `${API_URL}/${username}/starred?page=1&per_page=1`;
-  try {
-    const starsResponse = await fetch(starsUrl, {
-      cache: "force-cache",
-    });
-    const linkHeader = starsResponse.headers.get("link");
-    if (!linkHeader) throw new Error("No link header found");
+  const starsResponse = await fetch(starsUrl, {
+    cache: "force-cache",
+  });
+  const linkHeader = starsResponse.headers.get("link");
+  if (!linkHeader) throw new Error("No link header found");
 
-    const lastPageLink = linkHeader
-      .split(",")
-      .find((link) => link.includes('rel="last"'));
-    if (!lastPageLink) throw new Error("No last page link found");
+  const lastPageLink = linkHeader
+    .split(",")
+    .find((link) => link.includes('rel="last"'));
+  if (!lastPageLink) throw new Error("No last page link found");
 
-    const noOfStars = new URLSearchParams(
-      lastPageLink.split("?")[1].split(">")[0],
-    ).get("page");
-    if (!noOfStars) throw new Error("No no of stars found");
+  const noOfStars = new URLSearchParams(
+    lastPageLink.split("?")[1].split(">")[0],
+  ).get("page");
+  if (!noOfStars) throw new Error("No no of stars found");
 
-    return {
-      totalStars: Number(noOfStars),
-    };
-  } catch (error) {
-    console.error("Error fetching user star count", { cause: error });
-    return null;
-  }
+  return {
+    totalStars: Number(noOfStars),
+  };
 };
 
-const fetchUserRepos = async (username: string): Promise<UserRepos | null> => {
+export const fetchUserRepos = async (username: string): Promise<UserRepos> => {
   const reposUrl = `${API_URL}/${username}/repos`;
   const perPage = 100;
 
-  try {
-    const userData = await fetchUserData(username);
-    if (!userData) throw new Error("Failed to fetch user data");
-    const totalRepoPages = Math.ceil(userData.publicRepos / perPage);
+  const userData = await fetchUserData(username);
+  if (!userData) throw new Error("Failed to fetch user data");
+  const totalRepoPages = Math.ceil(userData.publicRepos / perPage);
 
-    const repoRequests = Array.from(
-      { length: totalRepoPages },
-      async (_, i) => {
-        const res = await fetch(
-          `${reposUrl}?page=${i + 1}&per_page=${perPage}&sort=updated`,
-          {
-            cache: "force-cache",
-          },
-        );
-        return await res.json();
+  const repoRequests = Array.from({ length: totalRepoPages }, async (_, i) => {
+    const res = await fetch(
+      `${reposUrl}?page=${i + 1}&per_page=${perPage}&sort=updated`,
+      {
+        cache: "force-cache",
       },
     );
+    return await res.json();
+  });
 
-    const repoResponses = await Promise.allSettled(repoRequests);
+  const repoResponses = await Promise.allSettled(repoRequests);
 
-    const allRepos = repoResponses
-      .flatMap((res) => {
-        if (res.status === "fulfilled") {
-          return res.value;
+  const allRepos = repoResponses
+    .flatMap((res) => {
+      if (res.status === "fulfilled") {
+        return res.value;
+      }
+      return [];
+    })
+    .reduce<{ forkedRepos: Repo[]; notForkedRepos: Repo[] }>(
+      (acc, curr) => {
+        const repo = {
+          name: curr.name,
+          description: curr.description,
+          fork: curr.fork,
+          forks_count: curr.forks_count,
+          stargazers_count: curr.stargazers_count,
+          updated_at: curr.updated_at,
+          language: curr.language,
+          html_url: curr.html_url,
+        };
+        if (repo.fork) {
+          acc.forkedRepos.push(repo);
+        } else {
+          acc.notForkedRepos.push(repo);
         }
-        return [];
-      })
-      .reduce<{ forkedRepos: Repo[]; notForkedRepos: Repo[] }>(
-        (acc, curr) => {
-          const repo = {
-            name: curr.name,
-            description: curr.description,
-            fork: curr.fork,
-            forks_count: curr.forks_count,
-            stargazers_count: curr.stargazers_count,
-            updated_at: curr.updated_at,
-            language: curr.language,
-            html_url: curr.html_url,
-          };
-          if (repo.fork) {
-            acc.forkedRepos.push(repo);
-          } else {
-            acc.notForkedRepos.push(repo);
-          }
-          return acc;
-        },
-        { forkedRepos: [], notForkedRepos: [] },
-      );
-    return allRepos;
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
+        return acc;
+      },
+      { forkedRepos: [], notForkedRepos: [] },
+    );
+  return allRepos;
 };
 
 export const fetchUserDetails = async (
