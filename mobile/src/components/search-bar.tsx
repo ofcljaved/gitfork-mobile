@@ -1,18 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Input, InputField, InputSlot } from "./ui/input";
 import { Icon } from "./ui/icon";
 import Animated, { interpolate, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
+import { useSearchStore } from '@/store/search';
 
-export default function SearchBar({
-    onSubmit,
-}: {
-    onSubmit: (value: string) => void;
-}) {
-    const [text, setText] = useState("");
+export default function SearchBar() {
+    const { setSearch } = useSearchStore();
 
-    const handleSubmit = () => {
-        onSubmit(text);
-        setText("");
+    const handleSubmit = (value: string) => {
+        setSearch(value);
     }
     const offset = useSharedValue<number>(0);
 
@@ -35,11 +31,11 @@ export default function SearchBar({
             <InputSlot className="w-6 h-6 ml-2">
                 <Icon className="text-primary-100" name="search" />
             </InputSlot>
-            <InputField 
-                placeholder="Enter Text here..." 
-                onSubmitEditing={handleSubmit} 
-                value={text}
-                onChangeText={setText}
+            <InputField
+                placeholder="Enter Text here..."
+                onSubmitEditing={(e) => handleSubmit(e.nativeEvent.text)}
+                autoCapitalize='none'
+                inputMode='search'
             />
             <Animated.View
                 style={[animatedStyles]}
