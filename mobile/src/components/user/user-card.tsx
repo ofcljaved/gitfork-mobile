@@ -6,10 +6,10 @@ import { useSearchStore } from "@/store/search";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { fetchUser } from "@/actions/fetchUser";
 import { fetchRepos } from "@/actions/fetchRepos";
-import { Suspense } from "react";
+import { memo, Suspense } from "react";
 import { StatsCardSkeleton } from "./user-skeleton";
 
-export const UserCard = () => {
+export const UserCard = memo(() => {
     const { search } = useSearchStore();
     const { data: user } = useSuspenseQuery({
         queryKey: ["user", search],
@@ -38,9 +38,9 @@ export const UserCard = () => {
             </View>
         </View>
     );
-};
+});
 
-const ForkCount = () => {
+const ForkCount = memo(() => {
     const { search } = useSearchStore();
     const { data: repos } = useSuspenseQuery({
         queryKey: ["repos", search],
@@ -52,5 +52,5 @@ const ForkCount = () => {
             <StatsCard label="Forks" value={repos?.forkedRepos.length ?? 0} icon="fork" />
         </Suspense>
     );
-};
+});
 

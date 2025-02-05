@@ -1,5 +1,5 @@
-import React, { forwardRef, useEffect, useState } from "react"
-import { View, ViewProps } from "react-native"
+import React, { forwardRef, memo, useCallback, useEffect, useState } from "react"
+import { LayoutChangeEvent, View, ViewProps } from "react-native"
 import type { VariantProps } from "@gluestack-ui/nativewind-utils"
 import { tva } from '@gluestack-ui/nativewind-utils/tva';
 import { LinearGradient } from "expo-linear-gradient";
@@ -13,7 +13,7 @@ const boxStyle = tva({
 type IBoxProps = ViewProps &
     VariantProps<typeof boxStyle> & { className?: string }
 
-const Sekelton = forwardRef<React.ElementRef<typeof View>, IBoxProps>(
+const Sekelton = memo(forwardRef<React.ElementRef<typeof View>, IBoxProps>(
     ({ className, ...props }, ref) => {
         const { colorScheme } = useColorScheme();
         const [width, setWidth] = useState(0);
@@ -25,6 +25,10 @@ const Sekelton = forwardRef<React.ElementRef<typeof View>, IBoxProps>(
         const animatedStyles = useAnimatedStyle(() => ({
             transform: [{ translateX: translateX.value }],
         }));
+
+        const onLayout = useCallback((e: LayoutChangeEvent) => {
+            setWidth(e.nativeEvent.layout.width);
+        }, []);
 
         useEffect(() => {
             translateX.value = withRepeat
@@ -39,7 +43,7 @@ const Sekelton = forwardRef<React.ElementRef<typeof View>, IBoxProps>(
                 ref={ref} 
                 {...props} 
                 className={boxStyle({ class: className })} 
-                onLayout={(e) => { setWidth(e.nativeEvent.layout.width) }}
+                onLayout={onLayout}
             >
                 {props.children}
                 <Animated.View className="flex-1 w-full" style={animatedStyles} >
@@ -63,7 +67,7 @@ const Sekelton = forwardRef<React.ElementRef<typeof View>, IBoxProps>(
             </View >
         )
     }
-)
+));
 
 Sekelton.displayName = 'Skeleton'
 export { Sekelton }

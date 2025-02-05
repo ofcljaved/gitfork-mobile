@@ -1,7 +1,8 @@
 import { Sekelton } from "@/components/ui/skeleton";
+import { memo } from "react";
 import { View } from "react-native";
 
-export const UserCardSkeleton = () => {
+export const UserCardSkeleton = memo(() => {
     return (
         <View>
             <View className="flex flex-row gap-4 items-center mt-4">
@@ -20,11 +21,11 @@ export const UserCardSkeleton = () => {
         </View>
     );
 
-}
+});
 
-export const StatsCardSkeleton = ({ length = 100 }) => {
+export const StatsCardSkeleton = memo<{ length?: number }>(({ length = 100 }) => {
     return (
         <Sekelton style={{ width: length }} className="h-8">
         </Sekelton>
     );
-}
+})
