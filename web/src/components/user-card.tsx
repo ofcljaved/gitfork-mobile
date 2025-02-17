@@ -1,4 +1,4 @@
-import { UserDetails } from "@/lib/fetchUserDetails";
+import { fetchUserData, fetchUserStarCount, UserDetails } from "@/lib/fetchUserDetails";
 import { Card, CardContent } from "./ui/card";
 import Icon from "./icon";
 import { IconKey } from "@/lib/icons";
@@ -13,7 +13,9 @@ const BaseUserCard = ({ children }: { children: React.ReactNode }) => {
     );
 }
 
-export const SmallUserCard = ({ user }: { user: UserDetails }) => {
+export const SmallUserCard = async({ query }: { query: string }) => {
+    const user = await fetchUserData(query);
+    const userStars = await fetchUserStarCount(query);
     return (
         <BaseUserCard>
             <CardContent className="p-0 grid grid-cols-[auto_1fr] items-center gap-6">
@@ -39,8 +41,12 @@ export const SmallUserCard = ({ user }: { user: UserDetails }) => {
         </BaseUserCard>
     );
 }
-export const UserCard = ({ user, small }: { user: UserDetails, small?: boolean }) => {
-    if (small) return <SmallUserCard user={user} />;
+export const UserCard = async({ query, small }: { query: string, small?: boolean }) => {
+    //if (small) return <SmallUserCard query={query} />;
+
+    const user = await fetchUserData(query);
+    const userStars = await fetchUserStarCount(query);
+
     return (
         <BaseUserCard>
             <CardContent className="p-0 grid grid-rows-[20px_8rem_1fr]">
@@ -64,7 +70,7 @@ export const UserCard = ({ user, small }: { user: UserDetails, small?: boolean }
                         <StatsCard icon={"book"} label="Repositories" value={user.publicRepos} />
                         <StatsCard icon={"users"} label="Followers" value={user.followers} />
                         <StatsCard icon={"gitFork"} label="Forks" value={user.forkedRepos.length} />
-                        <StatsCard icon={"star"} label="Stars" value={user.totalStars} />
+                        <StatsCard icon={"star"} label="Stars" value={userStars.totalStars} />
                     </div>
                 </div>
             </CardContent>
