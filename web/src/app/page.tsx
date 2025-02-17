@@ -4,7 +4,7 @@ import { fetchUserDetails } from "@/lib/fetchUserDetails";
 import Form from 'next/form';
 import Icon from "@/components/icon";
 import { ThemeChange } from "@/components/ui/theme-change";
-import FormLoader from "@/components/form-loader";
+//import FormLoader from "@/components/form-loader";
 import { NO_OF_REPOS } from "@/constant";
 
 
@@ -24,7 +24,7 @@ export default async function Page({
                     <input name="name" placeholder="Enter your github username" autoComplete="off" className="text-foreground bg-transparent w-full outline-none border-none" />
                 </div>
                 <ThemeChange />
-                <FormLoader />
+                {/*<FormLoader />*/}
             </Form>
             {user && <UserCard user={user} />}
             {user &&
