@@ -1,6 +1,6 @@
 import { Suspense } from "react"
-import { SmallUserCard } from "./small-card"
-import { UserCard } from "./user-card"
+import { SmallUserCard } from "@/components/user/small-card"
+import { UserCard } from "@/components/user/user-card"
 
 export const User = async ({ query, small }: { query: string, small?: boolean }) => {
     if (small) {

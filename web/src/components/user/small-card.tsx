@@ -1,10 +1,10 @@
-import { fetchUserData, fetchUserRepos, fetchUserStarCount } from "@/lib/fetchUserDetails";
+import { fetchUserData,  fetchUserStarCount } from "@/lib/fetchUserDetails";
 import { CardContent } from "@/components/ui/card";
 import Image from "next/image";
-import { BaseUserCard } from "./base-card";
-import { StatsCard } from "./stats-card";
+import { BaseUserCard } from "@/components/user/base-card";
+import { StatsCard } from "@/components/user/stats-card";
 import { Suspense } from "react";
-import { ForkStatsCard } from "./suspense-fork";
+import { ForkStatsCard } from "@/components/user/suspense-fork";
 
 export const SmallUserCard = async ({ query }: { query: string }) => {
     const user = await fetchUserData(query);

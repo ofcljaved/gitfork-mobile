@@ -1,9 +1,9 @@
 import { fetchUserData, fetchUserStarCount } from "@/lib/fetchUserDetails";
 import { CardContent } from "@/components/ui/card";
-import { BaseUserCard } from "./base-card";
-import { StatsCard } from "./stats-card";
+import { BaseUserCard } from "@/components/user/base-card";
+import { StatsCard } from "@/components/user/stats-card";
 import Image from "next/image";
-import { ForkStatsCard } from "./suspense-fork";
+import { ForkStatsCard } from "@/components/user/suspense-fork";
 import { Suspense } from "react";
 
 export const UserCard = async ({ query }: { query: string }) => {

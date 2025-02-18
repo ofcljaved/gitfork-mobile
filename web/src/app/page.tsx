@@ -1,10 +1,8 @@
 import { User } from "@/components/user";
-import { RepoList } from "@/components/repo-list";
-import { fetchUserDetails } from "@/lib/fetchUserDetails";
 import Form from 'next/form';
 import Icon from "@/components/icon";
 import { ThemeChange } from "@/components/ui/theme-change";
-import { NO_OF_REPOS } from "@/constant";
+import { Repo } from "@/components/repo";
 
 
 export default async function Page({
@@ -13,7 +11,6 @@ export default async function Page({
     searchParams: Promise<{ name: string }>;
 }) {
     const q = (await searchParams).name;
-    const user = q ? await fetchUserDetails(q) : null;
 
     return (
         <>
@@ -24,13 +21,8 @@ export default async function Page({
                 </div>
                 <ThemeChange />
             </Form>
-            <User query={q} />
-            {user &&
-                <div className="grid md:grid-cols-2 gap-6">
-                    <RepoList title="Original Repositories" username={user.username} repos={user.notForkedRepos} noOfRepos={NO_OF_REPOS} />
-                    <RepoList title="Forked Repositories" username={user.username} repos={user.forkedRepos} noOfRepos={NO_OF_REPOS} forked />
-                </div>
-            }
+            {q && <User query={q} />}
+            {q && <Repo query={q} />}
         </>
     );
 }
