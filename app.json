@@ -21,7 +21,8 @@
         "foregroundImage": "./assets/icons/adaptive-icon.png",
         "monochromeImage": "./assets/icons/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.ofcljaved.gitfork"
     },
     "web": {
       "bundler": "metro",
@@ -46,6 +47,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "39b47325-f520-475f-bca9-20133c82c31c"
+      }
     }
   }
 }
